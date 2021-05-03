@@ -1,0 +1,30 @@
+services:
+  api:
+    build: ./api
+    ports:
+      - "8080:8080"
+    expose:
+      - "8080"
+    depends_on:
+      - mysql-standalone
+    command: sh -c "./wait && java -jar app.jar"
+    environment:
+      - WAIT_HOSTS=mysql-standalone:3306
+      - WAIT_HOSTS_TIMEOUT=300
+      - WAIT_SLEEP_INTERVAL=5
+      - WAIT_HOST_CONNECT_TIMEOUT=30
+    links:
+      - "mysql-standalone:mysql"
+      
+  mysql-standalone:
+    image: mysql:5.6
+    restart: always
+    ports:
+      - "3306:3306"
+    expose:
+      - "3306"
+    environment:
+      - MYSQL_USER=sa
+      - MYSQL_PASSWORD=password
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_DATABASE=test
